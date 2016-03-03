@@ -1,0 +1,20 @@
+{
+  "name": "dchart",
+  "version": "0.1.0",
+  "description": "D3 chart with realtime data",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "d3",
+    "chart"
+  ],
+  "dependencies": {
+    "express": "4.10.2",
+    "readline": ">= 1.0.0",
+    "socketio": ">= 1.0.0"
+  },
+  "author": "Hyungchan Kim",
+  "license": "GPL-3.0"
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+
+         body {
+             font: 10px sans-serif;
+         }
+
+         .axis path,
+         .axis line {
+             fill: none;
+             stroke: #000;
+             shape-rendering: crispEdges;
+         }
+
+         /* .x.axis path {
+            display: none;
+            } */
+
+         .line {
+             fill: none;
+             stroke: steelblue;
+             stroke-width: 1.5px;
+         }
+
+        </style>
+    </head>
+    <body>
+        <div class="chart"></div>
+        <!-- <div class="chart"></div> -->
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="tran.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+         var socket = io();
+         socket.on('data', function(line) {
+             var update = chart.update;
+             var ar = line.split(' ');
+             var data = {id: +ar[0], value: +ar[1]};
+             d3.selectAll(".chart")
+               .data([[data]])
+               .call(update);
+
+             /* console.log('data: ' + data); */
+         });
+        </script>
+    </body>
+</html>
