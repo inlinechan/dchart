@@ -35,6 +35,23 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
          var socket = io();
+
+         var chart = lineChart()
+         .width(640)
+         .height(300);
+
+         var data = [
+             {id: 1, value: 1000},
+             {id: 2, value: 1100},
+             {id: 3, value: 1150},
+             {id: 4, value: 1120},
+             {id: 5, value: 1200}
+         ];
+
+         var svg = d3.selectAll(".chart")
+                     .data([data])
+                     .call(chart);
+
          socket.on('data', function(line) {
              var update = chart.update;
              var ar = line.split(' ');

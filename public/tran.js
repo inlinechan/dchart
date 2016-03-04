@@ -194,20 +194,3 @@ function type(d) {
     d.value = +d.value;
     return d;
 }
-
-var chart = null;
-
-d3.tsv("data.tsv", type, function(error, data) {
-    if (error) throw error;
-
-    chart = lineChart()
-        .width(640)
-        .height(300);
-
-    data = data.map(type);
-
-    var svg = d3.selectAll(".chart")
-            // .data([data, data])
-            .data([data])
-            .call(chart);
-});
