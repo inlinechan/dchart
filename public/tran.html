@@ -40,8 +40,7 @@
              var ar = line.split(' ');
              var data = {id: +ar[0], value: +ar[1]};
              d3.selectAll(".chart")
-               .data([[data]])
-               .call(update);
+               .call(update, data);
 
              /* console.log('data: ' + data); */
          });

@@ -19,7 +19,6 @@ function lineChart() {
             .y(function(d) { return y(getY(d)); });
 
     var initialMinDomainX = 1;
-    var lastData = [];
     var xRange = 10;
 
     var getX = function(d) {
@@ -83,8 +82,6 @@ function lineChart() {
                 .datum(data)
                 .attr("class", "line")
                 .attr("d", line);
-
-            lastData.push(data);
         });
     };
 
@@ -109,33 +106,37 @@ function lineChart() {
     };
 
     chart.update = function(selection, newData) {
-        var transition = d3.select({}).transition()
-                .duration(500);
-
-        selection.each(function(newData, index) {
-            // console.log(newData, index);
+        selection.each(function(data, index) {
+            console.log('data: ' + JSON.stringify(data));
             console.log('newdata: ' + JSON.stringify(newData));
+
+            newData = [].concat(newData);
 
             var svg = d3.select(this); // .select("svg");
             var translateX = 0;
 
-            transition = transition.each(function() {
+            var oldData = data;
+            data = data.concat(newData);
 
-                var oldData = lastData[index];
-                var data = oldData.concat(newData);
+            if (oldData == data)
+                console.error('data same!');
 
-                var lastX = getX(lastElement(oldData));
-                var currentX = getX(lastElement(newData));
+            if (data.length > xRange) {
+                var transition = d3.select({}).transition()
+                        .duration(500);
 
-                initialMinDomainX = getX(firstElement(oldData));
+                transition = transition.each(function() {
+                    var lastX = getX(lastElement(oldData));
+                    var currentX = getX(lastElement(newData));
 
-                console.log(data.map(getX));
-                console.log(data.map(function(d) { return d.value; }));
-                // console.log(line(data));
+                    initialMinDomainX = getX(firstElement(oldData));
 
-                // x.domain(d3.extent(data, getX));
+                    console.log(data.map(getX));
+                    console.log(data.map(function(d) { return d.value; }));
+                    // console.log(line(data));
 
-                if (data.length >= xRange) {
+                    // x.domain(d3.extent(data, getX));
+
                     svg.select(".line")
                         .datum(data)
                         .attr("d", line)
@@ -149,22 +150,30 @@ function lineChart() {
                         .transition()
                         .attr("transform", "translate(" + xTranslateOffset + ")")
                         .each("end", function() {
-                            svg.select(".line")
+                            // svg.select(".line")
+                            selection
                                 .datum(data)
                                 .attr("d", line)
                                 .attr("transform", null);
                         });
 
                     data.splice(0, newData.length);
-                } else {
-                    svg.select(".line")
-                        .datum(data)
-                        .transition()
-                        .attr("d", line);
-                }
 
-                lastData[index] = data;
-                // console.log('data.length: ' + data.length);
+                    x.domain(d3.extent(data, getX));
+                    // console.log('domain: ' + data.map(getX));
+                    // console.log(data.map(function(d) { return d.value; }));
+
+                    svg.select(".x.axis").call(xAxis);
+                    svg.select(".y.axis").call(yAxis);
+                });
+            } else {
+                x.domain(d3.extent(data, getX));
+                svg.select(".line")
+                    .datum(data)
+                    .transition()
+                    .attr("d", line);
+
+                selection.datum(data);
 
                 x.domain(d3.extent(data, getX));
                 console.log('domain: ' + data.map(getX));
@@ -172,7 +181,7 @@ function lineChart() {
 
                 svg.select(".x.axis").call(xAxis);
                 svg.select(".y.axis").call(yAxis);
-            });
+            }
         });
     };
 
@@ -192,7 +201,7 @@ d3.tsv("data.tsv", type, function(error, data) {
 
     chart = lineChart()
         .width(640)
-        .height(480);
+        .height(300);
 
     data = data.map(type);
 
