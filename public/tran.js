@@ -19,8 +19,8 @@ function lineChart() {
             .y(function(d) { return y(getY(d)); });
 
     var initialMinDomainX = 1;
-
     var lastData = [];
+    var xRange = 10;
 
     var getX = function(d) {
         return d.id;
@@ -141,9 +141,14 @@ function lineChart() {
                     .attr("transform", null);
 
                 translateX = currentX - lastX;
+
+                var xTranslateOffset = 0;
+                if (data.length > xRange)
+                    xTranslateOffset = -1 * x(initialMinDomainX + translateX);
+
                 svg.select(".line")
                     .transition()
-                    .attr("transform", "translate(" + -1 * x(initialMinDomainX + translateX) + ")")
+                    .attr("transform", "translate(" + xTranslateOffset + ")")
                     .each("end", function() {
                         svg.select(".line")
                             .datum(data)
@@ -152,7 +157,8 @@ function lineChart() {
                     });
 
                 // console.log('data.length: ' + data.length);
-                data.splice(0, newData.length);
+                if (data.length > xRange)
+                    data.splice(0, newData.length);
                 lastData[index] = data;
                 // console.log('data.length: ' + data.length);
 
