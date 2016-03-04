@@ -3,11 +3,8 @@ function lineChart() {
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var x = d3.scale.linear()
-            .range([0, width]);
-
-    var y = d3.scale.linear()
-            .range([height, 0]);
+    var x = d3.scale.linear();
+    var y = d3.scale.linear();
 
     var xAxis = d3.svg.axis()
             .scale(x)
@@ -57,10 +54,13 @@ function lineChart() {
                 .attr("width", width)
                 .attr("height", height);
 
-            x.domain(d3.extent(data, getX));
+            x.range([0, width])
+                .domain(d3.extent(data, getX));
+
             initialMinDomainX = firstElement(x.domain());
             // y.domain(d3.extent(data, function(d) { return d.value; }));
-            y.domain([500, 1200]);
+            y.range([height, 0])
+                .domain([500, 1200]);
 
             gEnter.append("g")
                 .attr("class", "x axis")
@@ -96,16 +96,15 @@ function lineChart() {
         return yAxis;
     };
 
-    // TODO: does not work
     chart.width = function(value) {
         if (!arguments.length) return value;
-        width = value;
+        width = value - margin.left - margin.right;
         return chart;
     };
 
     chart.height = function(value) {
         if (!arguments.length) return value;
-        height = value;
+        height = value - margin.top - margin.bottom;
         return chart;
     };
 
@@ -181,7 +180,9 @@ var chart = null;
 d3.tsv("data.tsv", type, function(error, data) {
     if (error) throw error;
 
-    chart = lineChart();
+    chart = lineChart()
+        .width(640)
+        .height(480);
 
     data = data.map(type);
 
