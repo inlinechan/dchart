@@ -135,30 +135,34 @@ function lineChart() {
 
                 // x.domain(d3.extent(data, getX));
 
-                svg.select(".line")
-                    .datum(data)
-                    .attr("d", line)
-                    .attr("transform", null);
+                if (data.length >= xRange) {
+                    svg.select(".line")
+                        .datum(data)
+                        .attr("d", line)
+                        .attr("transform", null);
 
-                translateX = currentX - lastX;
+                    translateX = currentX - lastX;
 
-                var xTranslateOffset = 0;
-                if (data.length > xRange)
-                    xTranslateOffset = -1 * x(initialMinDomainX + translateX);
+                    var xTranslateOffset = -1 * x(initialMinDomainX + translateX);
 
-                svg.select(".line")
-                    .transition()
-                    .attr("transform", "translate(" + xTranslateOffset + ")")
-                    .each("end", function() {
-                        svg.select(".line")
-                            .datum(data)
-                            .attr("d", line)
-                            .attr("transform", null);
-                    });
+                    svg.select(".line")
+                        .transition()
+                        .attr("transform", "translate(" + xTranslateOffset + ")")
+                        .each("end", function() {
+                            svg.select(".line")
+                                .datum(data)
+                                .attr("d", line)
+                                .attr("transform", null);
+                        });
 
-                // console.log('data.length: ' + data.length);
-                if (data.length > xRange)
                     data.splice(0, newData.length);
+                } else {
+                    svg.select(".line")
+                        .datum(data)
+                        .transition()
+                        .attr("d", line);
+                }
+
                 lastData[index] = data;
                 // console.log('data.length: ' + data.length);
 
