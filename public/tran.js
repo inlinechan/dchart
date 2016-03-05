@@ -102,6 +102,8 @@ function lineChart() {
                 .attr("class", "line")
                 .style("stroke", function(d) { return color(d.name); })
                 .attr("d", function(d) { return line(d.values); });
+
+            selection.data([data]);
         });
     };
 
@@ -132,12 +134,24 @@ function lineChart() {
 
             newData = [].concat(newData);
 
-            var svg = d3.select(this); // .select("svg");
-            var path = svg.select(".line");
+            var svg = d3.select(this);
+            var path = svg.selectAll(".line");
             var translateX = 0;
 
             var oldData = data;
             data = data.concat(newData);
+
+            var keys = d3.keys(data[0]);
+            keys.splice(0, 1);
+
+            var cities = keys.map(function(name) {
+                return {
+                    name: name,
+                    values: data.map(function(d) {
+                        return {id: d.id, value: +d[name]};
+                    })
+                };
+            });
 
             if (oldData == data)
                 console.error('data same!');
@@ -159,8 +173,9 @@ function lineChart() {
                     // x.domain(d3.extent(data, getX));
 
                     path
-                        .datum(data)
-                        .attr("d", line)
+                        .data(cities)
+                        // .style("stroke", function(d) { return color(d.name); })
+                        .attr("d", function(d) { return line(d.values); })
                         .attr("transform", null);
 
                     translateX = currentX - lastX;
@@ -173,12 +188,18 @@ function lineChart() {
                         .each("end", function() {
                             // path
                             selection
-                                .datum(data)
-                                .attr("d", line)
+                                .data([data])
+                                .attr("d", function(d) {
+                                    if (d.values == undefined)
+                                        console.log(d.values);
+                                    return line(d.values);
+                                })
                                 .attr("transform", null);
                         });
 
                     data.splice(0, newData.length);
+
+                    selection.data([data]);
 
                     x.domain(d3.extent(data, getX));
                     // console.log('domain: ' + data.map(getX));
@@ -190,11 +211,11 @@ function lineChart() {
             } else {
                 x.domain(d3.extent(data, getX));
                 path
-                    .datum(data)
+                    .data(cities)
                     .transition()
-                    .attr("d", line);
+                    .attr("d", function(d) { return line(d.values); });
 
-                selection.datum(data);
+                selection.data([data]);
 
                 x.domain(d3.extent(data, getX));
                 console.log('domain: ' + data.map(getX));
