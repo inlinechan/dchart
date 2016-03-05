@@ -14,6 +14,8 @@ function lineChart() {
             .scale(y)
             .orient("left");
 
+    var color = d3.scale.category10();
+
     var line = d3.svg.line()
             .x(function(d) { return x(getX(d)); })
             .y(function(d) { return y(getY(d)); });
@@ -39,14 +41,31 @@ function lineChart() {
 
     function chart(selection) {
         selection.each(function(data) {
-            var svg = d3.select(this).selectAll("svg").data([data]);
+            var keys = d3.keys(data[0]);
+            keys.splice(0, 1);
+            color.domain(keys);
 
-            var gEnter = svg.enter().append("svg").append("g");
+            var cities = color.domain().map(function(name) {
+                return {
+                    name: name,
+                    values: data.map(function(d) {
+                        return {id: d.id, value: +d[name]};
+                    })
+                };
+            });
 
-            svg.attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
+            var svg = d3.select(this).append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-            gEnter.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+            var gEnter = svg.selectAll(".city")
+                    .data(cities)
+                    .enter()
+                    .append("g")
+                    .attr("class", "city");
+
             gEnter.append("defs").append("clipPath")
                 .attr("id", "clip")
                 .append("rect")
@@ -58,15 +77,16 @@ function lineChart() {
 
             initialMinDomainX = firstElement(x.domain());
             // y.domain(d3.extent(data, function(d) { return d.value; }));
+            // TODO: calculate y domain
             y.range([height, 0])
-                .domain([500, 1200]);
+                .domain([100, 1200]);
 
-            gEnter.append("g")
+            svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
-            gEnter.append("g")
+            svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
                 .append("text")
@@ -79,9 +99,9 @@ function lineChart() {
             gEnter.append("g")
                 .attr("clip-path", "url(#clip)")
                 .append("path")
-                .datum(data)
                 .attr("class", "line")
-                .attr("d", line);
+                .style("stroke", function(d) { return color(d.name); })
+                .attr("d", function(d) { return line(d.values); });
         });
     };
 
