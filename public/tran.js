@@ -47,7 +47,7 @@ function lineChart() {
             keys.splice(0, 1);
             color.domain(keys);
 
-            var cities = color.domain().map(function(name) {
+            var series = color.domain().map(function(name) {
                 return {
                     name: name,
                     values: data.map(function(d) {
@@ -62,11 +62,11 @@ function lineChart() {
                     .append("g")
                     .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-            var gEnter = svg.selectAll(".city")
-                    .data(cities)
+            var gEnter = svg.selectAll(".item")
+                    .data(series)
                     .enter()
                     .append("g")
-                    .attr("class", "city");
+                    .attr("class", "item");
 
             gEnter.append("defs").append("clipPath")
                 .attr("id", "clip")
@@ -105,7 +105,7 @@ function lineChart() {
                 .style("stroke", function(d) { return color(d.name); })
                 .attr("d", function(d) { return line(d.values); });
 
-            selection.data([cities]);
+            selection.data([series]);
         });
     };
 
@@ -174,7 +174,7 @@ function lineChart() {
                         .attr("transform", "translate(" + xTranslateOffset + ")");
 
                     data.forEach(function(e) {
-                        e.values.splice(0, 1/*newData.length*/);
+                        e.values.splice(0, 1);
                     });
 
                     selection.data([data]);
@@ -193,7 +193,6 @@ function lineChart() {
 
                 selection.data([data]);
 
-                x.domain(d3.extent(data[0].values, getX));
                 // data.forEach(function(e) {
                 //     console.log('domain: ' + e.values.map(getX));
                 //     console.log('values: ' + e.values.map(getY));
