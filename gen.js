@@ -11,10 +11,14 @@ if (process.argv.length > 3)
 
 setTimeout(function() {
     setInterval(function() {
-        var age = ymin + (Math.random() * (ymax - ymin));
-        var cost = 100 + (Math.random() * (600 - 100));
-        var size = 300 + (Math.random() * (600 - 100));
-        console.log(id + ' ' + parseInt(age) + ' ' + parseInt(cost) + ' ' + parseInt(size));
+        var keys = ['age', 'cost', 'size'];
+        var values = [
+            ymin + (Math.random() * (ymax - ymin)),
+            100 + (Math.random() * (600 - 100)),
+            300 + (Math.random() * (600 - 100))
+        ];
+        values = values.map(function(e) { return parseInt(e); });
+        console.log(id + ' ' + values.join(' '));
         id += 1;
     }, interval);
 }, 2000);

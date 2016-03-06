@@ -54,8 +54,9 @@
 
          socket.on('data', function(line) {
              var update = chart.update;
-             var ar = line.split(' ');
-             var data = {id: +ar[0], age: +ar[1], cost: +ar[2], size: +ar[3]};
+             var values = line.split(' ');
+             var keys = ['id', 'age', 'cost', 'size'];
+             var data = keys.reduce(function(o, v, i) { o[v] = values[i]; return o; }, {});
              d3.selectAll(".chart")
                .call(update, data);
 
