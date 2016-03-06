@@ -147,7 +147,7 @@ function lineChart() {
             var path = svg.selectAll(".line");
             var translateX = 0;
 
-            if (data.length > xRange) {
+            if (data[0].values.length > xRange) {
                 var transition = d3.select({}).transition()
                         .duration(500);
 
@@ -158,9 +158,8 @@ function lineChart() {
 
                     initialMinDomainX = getX(firstElement(values));
 
-                    console.log(data.map(getX));
-                    console.log(data.map(function(d) { return d.value; }));
-                    // console.log(line(data));
+                    console.log(values.map(getX));
+                    console.log(values.map(getY));
 
                     // x.domain(d3.extent(data, getX));
 
@@ -178,22 +177,25 @@ function lineChart() {
                         .transition()
                         .attr("transform", "translate(" + xTranslateOffset + ")")
                         .each("end", function() {
-                            // path
-                            selection
-                                .data([data])
-                                .attr("d", function(d) {
-                                    if (d.values == undefined)
-                                        console.log(d.values);
-                                    return line(d.values);
-                                })
-                                .attr("transform", null);
+                            // var dataOld = data;
+                            // selection
+                            //     .data([dataOld])
+                            //     .attr("d", function(d) {
+                            //         if (d.values == undefined)
+                            //             console.log(d.values);
+                            //         return line(d.values);
+                            //     })
+                            //     .attr("transform", null);
                         });
 
-                    data.splice(0, newData.length);
+                    data.forEach(function(e) {
+                        e.values.splice(0, 1/*newData.length*/);
+                    });
+                    // data.splice(0, newData.length);
 
                     selection.data([data]);
 
-                    x.domain(d3.extent(data, getX));
+                    x.domain(d3.extent(data[0].values, getX));
                     // console.log('domain: ' + data.map(getX));
                     // console.log(data.map(function(d) { return d.value; }));
 
