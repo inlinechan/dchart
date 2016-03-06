@@ -41,11 +41,11 @@
          .height(300);
 
          var data = [
-             {id: 1, value: 1000, cost: 100},
-             {id: 2, value: 1100, cost: 400},
-             {id: 3, value: 1150, cost: 500},
-             {id: 4, value: 1120, cost: 700},
-             {id: 5, value: 1200, cost: 400},
+             {id: 1, age: 1000, cost: 100, size: 300},
+             {id: 2, age: 1100, cost: 400, size: 400},
+             {id: 3, age: 1150, cost: 500, size: 500},
+             {id: 4, age: 1120, cost: 700, size: 100},
+             {id: 5, age: 1200, cost: 400, size: 50},
          ];
 
          var svg = d3.selectAll(".chart")
@@ -55,7 +55,7 @@
          socket.on('data', function(line) {
              var update = chart.update;
              var ar = line.split(' ');
-             var data = {id: +ar[0], value: +ar[1], cost: +ar[2]};
+             var data = {id: +ar[0], age: +ar[1], cost: +ar[2], size: +ar[3]};
              d3.selectAll(".chart")
                .call(update, data);
 

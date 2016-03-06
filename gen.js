@@ -11,9 +11,10 @@ if (process.argv.length > 3)
 
 setTimeout(function() {
     setInterval(function() {
-        var value = ymin + (Math.random() * (ymax - ymin));
+        var age = ymin + (Math.random() * (ymax - ymin));
         var cost = 100 + (Math.random() * (600 - 100));
-        console.log(id + ' ' + parseInt(value) + ' ' + parseInt(cost));
+        var size = 300 + (Math.random() * (600 - 100));
+        console.log(id + ' ' + parseInt(age) + ' ' + parseInt(cost) + ' ' + parseInt(size));
         id += 1;
     }, interval);
 }, 2000);
