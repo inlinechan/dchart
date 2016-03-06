@@ -31,8 +31,10 @@ function lineChart() {
         return d.value;
     };
 
-    var lastElement = function(ar) {
-        return ar[ar.length - 1];
+    var lastElement = function(ar, dist) {
+        if (dist == undefined)
+            dist = 1;
+        return ar[ar.length - dist];
     };
 
     var firstElement = function(ar) {
@@ -103,7 +105,7 @@ function lineChart() {
                 .style("stroke", function(d) { return color(d.name); })
                 .attr("d", function(d) { return line(d.values); });
 
-            selection.data([data]);
+            selection.data([cities]);
         });
     };
 
@@ -132,39 +134,29 @@ function lineChart() {
             console.log('data: ' + JSON.stringify(data));
             console.log('newdata: ' + JSON.stringify(newData));
 
-            newData = [].concat(newData);
+            var dataLength = data.length;
+            data.forEach(function(e) {
+                var name = e.name;
+                var values = e.values;
+                var o = {id: newData.id, value: newData[name]};
+                values.push(o);
+            });
+            console.log('data: ' + JSON.stringify(data));
 
             var svg = d3.select(this);
             var path = svg.selectAll(".line");
             var translateX = 0;
-
-            var oldData = data;
-            data = data.concat(newData);
-
-            var keys = d3.keys(data[0]);
-            keys.splice(0, 1);
-
-            var cities = keys.map(function(name) {
-                return {
-                    name: name,
-                    values: data.map(function(d) {
-                        return {id: d.id, value: +d[name]};
-                    })
-                };
-            });
-
-            if (oldData == data)
-                console.error('data same!');
 
             if (data.length > xRange) {
                 var transition = d3.select({}).transition()
                         .duration(500);
 
                 transition = transition.each(function() {
-                    var lastX = getX(lastElement(oldData));
-                    var currentX = getX(lastElement(newData));
+                    var values = data[0].values;
+                    var lastX = getX(lastElement(values, 2));
+                    var currentX = getX(lastElement(values));
 
-                    initialMinDomainX = getX(firstElement(oldData));
+                    initialMinDomainX = getX(firstElement(values));
 
                     console.log(data.map(getX));
                     console.log(data.map(function(d) { return d.value; }));
@@ -173,7 +165,7 @@ function lineChart() {
                     // x.domain(d3.extent(data, getX));
 
                     path
-                        .data(cities)
+                        .data(data)
                         // .style("stroke", function(d) { return color(d.name); })
                         .attr("d", function(d) { return line(d.values); })
                         .attr("transform", null);
@@ -209,17 +201,19 @@ function lineChart() {
                     svg.select(".y.axis").call(yAxis);
                 });
             } else {
-                x.domain(d3.extent(data, getX));
+                x.domain(d3.extent(data[0].values, getX));
                 path
-                    .data(cities)
+                    .data(data)
                     .transition()
                     .attr("d", function(d) { return line(d.values); });
 
                 selection.data([data]);
 
-                x.domain(d3.extent(data, getX));
-                console.log('domain: ' + data.map(getX));
-                console.log(data.map(function(d) { return d.value; }));
+                x.domain(d3.extent(data[0].values, getX));
+                data.forEach(function(e) {
+                    console.log('domain: ' + e.values.map(getX));
+                    console.log('values: ' + e.values.map(getY));
+                });
 
                 svg.select(".x.axis").transition().call(xAxis);
                 svg.select(".y.axis").call(yAxis);
