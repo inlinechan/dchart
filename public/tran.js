@@ -131,17 +131,16 @@ function lineChart() {
 
     chart.update = function(selection, newData) {
         selection.each(function(data, index) {
-            console.log('data: ' + JSON.stringify(data));
-            console.log('newdata: ' + JSON.stringify(newData));
+            // console.log('data: ' + JSON.stringify(data));
+            // console.log('newdata: ' + JSON.stringify(newData));
 
             var dataLength = data.length;
             data.forEach(function(e) {
                 var name = e.name;
                 var values = e.values;
-                var o = {id: newData.id, value: newData[name]};
-                values.push(o);
+                values.push({id: newData.id, value: newData[name]});
             });
-            console.log('data: ' + JSON.stringify(data));
+            // console.log('data: ' + JSON.stringify(data));
 
             var svg = d3.select(this);
             var path = svg.selectAll(".line");
@@ -158,14 +157,11 @@ function lineChart() {
 
                     initialMinDomainX = getX(firstElement(values));
 
-                    console.log(values.map(getX));
-                    console.log(values.map(getY));
-
-                    // x.domain(d3.extent(data, getX));
+                    // console.log(values.map(getX));
+                    // console.log(values.map(getY));
 
                     path
                         .data(data)
-                        // .style("stroke", function(d) { return color(d.name); })
                         .attr("d", function(d) { return line(d.values); })
                         .attr("transform", null);
 
@@ -175,29 +171,15 @@ function lineChart() {
 
                     path
                         .transition()
-                        .attr("transform", "translate(" + xTranslateOffset + ")")
-                        .each("end", function() {
-                            // var dataOld = data;
-                            // selection
-                            //     .data([dataOld])
-                            //     .attr("d", function(d) {
-                            //         if (d.values == undefined)
-                            //             console.log(d.values);
-                            //         return line(d.values);
-                            //     })
-                            //     .attr("transform", null);
-                        });
+                        .attr("transform", "translate(" + xTranslateOffset + ")");
 
                     data.forEach(function(e) {
                         e.values.splice(0, 1/*newData.length*/);
                     });
-                    // data.splice(0, newData.length);
 
                     selection.data([data]);
 
                     x.domain(d3.extent(data[0].values, getX));
-                    // console.log('domain: ' + data.map(getX));
-                    // console.log(data.map(function(d) { return d.value; }));
 
                     svg.select(".x.axis").call(xAxis);
                     svg.select(".y.axis").call(yAxis);
@@ -212,10 +194,10 @@ function lineChart() {
                 selection.data([data]);
 
                 x.domain(d3.extent(data[0].values, getX));
-                data.forEach(function(e) {
-                    console.log('domain: ' + e.values.map(getX));
-                    console.log('values: ' + e.values.map(getY));
-                });
+                // data.forEach(function(e) {
+                //     console.log('domain: ' + e.values.map(getX));
+                //     console.log('values: ' + e.values.map(getY));
+                // });
 
                 svg.select(".x.axis").transition().call(xAxis);
                 svg.select(".y.axis").call(yAxis);
