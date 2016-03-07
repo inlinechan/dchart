@@ -25,7 +25,7 @@ rl.on('line', (line) => {
     console.log(`> ${line}`);
     for (var id in sockets) {
         var socket = sockets[id];
-        socket.emit('data', line);
+        socket.emit('data', parse(line));
     }
 });
 
@@ -38,3 +38,18 @@ app.use(express.static('public'));
 http.listen(3000, function() {
     console.log('listening on *:3000');
 });
+
+var parse = function(line) {
+    var values = line.split(' ');
+    var keys = ['id', 'age', 'cost', 'size'];
+    var data = keys.reduce(function(o, v, i) {
+        o[v] = parseInt(values[i]);
+        return o;
+    }, {});
+    return data;
+};
+
+if (process.argv.length > 2) {
+    parse = eval(process.argv[2]);
+    console.log('parse: ' + parse);
+}
