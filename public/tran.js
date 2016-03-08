@@ -267,6 +267,7 @@ function parseScale(schema) {
         'time': function() { return d3.time.scale(); }
     };
     schema.columns.forEach(function(e) {
+        e.type = e.type || 'number';
         if ('x' in e)
             x = scales[e.type]();
         else

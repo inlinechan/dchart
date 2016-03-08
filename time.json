@@ -2,15 +2,14 @@
     "columns": [
         {
             "name": "id",
-            "type": "number",
+            "type": "time",
+            "format": "%d-%b-%y",
             "x": true
         }, {
-            "name": "age",
+            "name": "start",
             "type": "number"
         }, {
-            "name": "cost"
-        }, {
-            "name": "size"
+            "name": "close"
         }
     ]
 }
