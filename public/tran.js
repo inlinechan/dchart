@@ -1,10 +1,10 @@
-function lineChart() {
+function lineChart(scales) {
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var x = d3.scale.linear();
-    var y = d3.scale.linear();
+    var x = scales.x || d3.scale.linear();
+    var y = scales.y || d3.scale.linear();
 
     var xAxis = d3.svg.axis()
             .scale(x)
@@ -256,4 +256,21 @@ function parseGetX(schema) {
         }
     });
     return getX;
+};
+
+function parseScale(schema) {
+    var x = null,
+        y = null;
+
+    var scales = {
+        'number': function() { return d3.scale.linear(); },
+        'time': function() { return d3.time.scale(); }
+    };
+    schema.columns.forEach(function(e) {
+        if ('x' in e)
+            x = scales[e.type]();
+        else
+            y = scales[e.type]();
+    });
+    return {x: x, y: y};
 };
