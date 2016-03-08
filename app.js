@@ -5,6 +5,8 @@ var http = require('http').Server(app);
 var readline = require('readline');
 var io = require('socket.io')(http);
 
+var fs = require('fs');
+
 var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -47,5 +49,9 @@ var schema = null;
 
 if (process.argv.length > 2) {
     schema = process.argv[2];
-    console.log('schema: ' + schema);
+    if (fs.statSync(schema).isFile()) {
+        schema = fs.readFileSync(schema);
+        schema = JSON.stringify(JSON.parse(schema));
+    }
+    console.log('schema: ' + JSON.parse(schema).columns);
 }

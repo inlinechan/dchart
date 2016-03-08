@@ -1,0 +1,17 @@
+{
+    "columns": [
+        {
+            "name": "id",
+            "type": "number"
+        }, {
+            "name": "age",
+            "type": "number"
+        }, {
+            "name": "cost",
+            "type": "number"
+        }, {
+            "name": "size",
+            "type": "number"
+        }
+    ]
+}
