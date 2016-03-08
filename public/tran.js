@@ -230,7 +230,7 @@ function getParser(schema) {
     var schema_ = schema;
 
     var parser = function(line) {
-        var values = line.split(' ');
+        var values = line.split(/\s+/);
         var data = schema_.reduce(function(o, v, i) {
             switch(v.type) {
             case 'number':
