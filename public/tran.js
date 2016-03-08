@@ -212,3 +212,31 @@ function type(d) {
     d.value = +d.value;
     return d;
 }
+
+// schema should be set first
+// var schema = [
+//     {name: 'id', type: 'number'},
+//     {name: 'date', type: 'time', format: '%d-%b-%y'},
+//     {name: 'close', type: 'number'}
+// ];
+
+function getParser(schema) {
+    var schema_ = schema;
+
+    var parser = function(line) {
+        var values = line.split(' ');
+        var data = schema_.reduce(function(o, v, i) {
+            switch(v.type) {
+            case 'number':
+                o[v.name] = parseInt(values[i]);
+                break;
+            case 'time':
+                o[v.name] = d3.time.format(v.format).parse(values[i]);
+                break;
+            }
+            return o;
+        }, {});
+        return data;
+    };
+    return parser;
+}

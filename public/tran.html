@@ -52,12 +52,21 @@
                      .data([data])
                      .call(chart);
 
-         socket.on('data', function(data) {
+         socket.on('data', function(line) {
              var update = chart.update;
+             var data = parser(line);
              d3.selectAll(".chart")
                .call(update, data);
 
              /* console.log('data: ' + data); */
+         });
+
+         var schema = null;
+         var parser = null;
+         socket.on('schema', function(data) {
+             console.log('schema: ' + data);
+             schema = JSON.parse(data);
+             parser = getParser(schema.columns);
          });
         </script>
     </body>

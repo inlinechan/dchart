@@ -25,7 +25,11 @@ rl.on('line', (line) => {
     console.log(`> ${line}`);
     for (var id in sockets) {
         var socket = sockets[id];
-        socket.emit('data', parse(line));
+        if (!socket.sentSchema) {
+            socket.sentSchema = true;
+            socket.emit('schema', schema);
+        }
+        socket.emit('data', line);
     }
 });
 
@@ -39,17 +43,9 @@ http.listen(3000, function() {
     console.log('listening on *:3000');
 });
 
-var parse = function(line) {
-    var values = line.split(' ');
-    var keys = ['id', 'age', 'cost', 'size'];
-    var data = keys.reduce(function(o, v, i) {
-        o[v] = parseInt(values[i]);
-        return o;
-    }, {});
-    return data;
-};
+var schema = null;
 
 if (process.argv.length > 2) {
-    parse = eval(process.argv[2]);
-    console.log('parse: ' + parse);
+    schema = process.argv[2];
+    console.log('schema: ' + schema);
 }
