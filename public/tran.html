@@ -40,25 +40,26 @@
          .width(640)
          .height(300);
 
-         var data = [
-             {id: 1, age: 1000, cost: 100, size: 300},
-             {id: 2, age: 1100, cost: 400, size: 400},
-             {id: 3, age: 1150, cost: 500, size: 500},
-             {id: 4, age: 1120, cost: 700, size: 100},
-             {id: 5, age: 1200, cost: 400, size: 50},
-         ];
+         var svg = null;
 
-         var svg = d3.selectAll(".chart")
-                     .data([data])
-                     .call(chart);
-
+         var hasChart = false;
+         var pendingData = null;
          socket.on('data', function(line) {
-             var update = chart.update;
              var data = parser(line);
-             d3.selectAll(".chart")
-               .call(update, data);
-
-             /* console.log('data: ' + data); */
+             if (!hasChart) {
+                 if (!pendingData)
+                     pendingData = data;
+                 else {
+                     svg = d3.selectAll(".chart")
+                             .data([[pendingData, data]])
+                             .call(chart);
+                     hasChart = true;
+                     pendingData = null;
+                 }
+             } else {
+                 d3.selectAll(".chart")
+                   .call(chart.update, data);
+             }
          });
 
          var schema = null;
