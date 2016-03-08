@@ -2,7 +2,8 @@
     "columns": [
         {
             "name": "id",
-            "type": "number"
+            "type": "number",
+            "x": true
         }, {
             "name": "age",
             "type": "number"

@@ -64,10 +64,13 @@
 
          var schema = null;
          var parser = null;
+         var getX = null;
+
          socket.on('schema', function(data) {
              console.log('schema: ' + data);
              schema = JSON.parse(data);
              parser = getParser(schema.columns);
+             chart.getX(parseGetX(schema));
          });
         </script>
     </body>

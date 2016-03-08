@@ -129,6 +129,12 @@ function lineChart() {
         return chart;
     };
 
+    chart.getX = function(func) {
+        if (!arguments.length) return func;
+        getX = func;
+        return chart;
+    };
+
     chart.update = function(selection, newData) {
         selection.each(function(data, index) {
             // console.log('data: ' + JSON.stringify(data));
@@ -240,3 +246,14 @@ function getParser(schema) {
     };
     return parser;
 }
+
+function parseGetX(schema) {
+    var getX = null;
+    schema.columns.forEach(function(e) {
+        if ('x' in e) {
+            var name = e['name'];
+            getX = function(d) { return d[name]; };
+        }
+    });
+    return getX;
+};
