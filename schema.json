@@ -3,14 +3,19 @@
         {
             "name": "id",
             "type": "number",
-            "x": true
+            "x": true,
+            "initial": 10,
+            "last": 30
         }, {
             "name": "age",
-            "type": "number"
+            "type": "number",
+            "range": [800, 1200]
         }, {
-            "name": "cost"
+            "name": "cost",
+            "range": [400, 700]
         }, {
-            "name": "size"
+            "name": "size",
+            "range": [0, 300]
         }
     ]
 }
