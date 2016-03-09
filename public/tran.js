@@ -81,7 +81,7 @@ function lineChart(scales) {
             // y.domain(d3.extent(data, function(d) { return d.value; }));
             // TODO: calculate y domain
             y.range([height, 0])
-                .domain([100, 1200]);
+                .domain([0, 1200]);
 
             svg.append("g")
                 .attr("class", "x axis")
