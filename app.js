@@ -45,13 +45,13 @@ http.listen(3000, function() {
     console.log('listening on *:3000');
 });
 
-var schema = 'number.js';
+var schema = 'number.json';
 
-if (process.argv.length > 2) {
+if (process.argv.length > 2)
     schema = process.argv[2];
-    if (fs.statSync(schema).isFile()) {
-        schema = fs.readFileSync(schema);
-        schema = JSON.stringify(JSON.parse(schema));
-    }
-    console.log('schema: ' + JSON.parse(schema).columns);
+
+if (fs.statSync(schema).isFile()) {
+    schema = fs.readFileSync(schema);
+    schema = JSON.stringify(JSON.parse(schema));
 }
+console.log('schema: ' + JSON.parse(schema).columns);
