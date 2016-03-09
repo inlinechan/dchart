@@ -1,4 +1,6 @@
-var fs = require('fs');
+var fs = require('fs'),
+    d3 = require('d3');
+
 
 var schema = 'schema.json';
 
@@ -19,23 +21,43 @@ function getGenerator(schema) {
 
     schema_.columns.forEach(function(e) {
         if (e.x) {
-            if (e.initial)
-                initial = e.initial;
-            if (e.last)
-                last = e.last;
+            if (e.initial) {
+                if (e.type == 'number')
+                    initial = e.initial;
+                else if(e.type == 'time')
+                    initial = new Date(e.initial).getTime();
+            }
+            if (e.last) {
+                if (e.type == 'number')
+                    last = e.last;
+                else if(e.type == 'time')
+                    last = new Date(e.last).getTime();
+            }
         }
     });
     var next = initial;
 
     var generator = function() {
         var initial = 1;
-        var increment = 1;
+        var day = 60 * 60 * 24 * 1000,
+            second = 1 * 1000,
+            minute = 60 * 1000,
+            hour = 60 * 60 * 1000;
+
+        var increment = null;
+        var defaultIncrement = {
+            'number': 1,
+            'time': second
+        };
 
         if (current == last)
             return null;
 
         var data = schema_.columns.reduce(function(o, v, i) {
             v.type = v.type || 'number';
+
+            if (v.x)
+                increment = v.increment || defaultIncrement[v.type];
 
             switch(v.type) {
             case 'number':
@@ -47,10 +69,16 @@ function getGenerator(schema) {
                     o[v.name] = parseInt(v.range[0] + Math.random() * (v.range[1] - v.range[0]));
                 }
                 break;
-            // TODO
-            // case 'time':
-            //     o[v.name] = d3.time.format(v.format).parse(values[i]);
-            //     break;
+
+            case 'time':
+                if (v.x) {
+                    current = next;
+                    next = next + increment;
+                    o[v.name] = d3.time.format(v.format)(new Date(current));
+                } else {
+                    o[v.name] = d3.time.format(v.format)(new Date(current));
+                }
+                break;
             }
             return o;
         }, {});

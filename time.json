@@ -4,12 +4,17 @@
             "name": "id",
             "type": "time",
             "format": "%d-%b-%y",
-            "x": true
+            "x": true,
+            "initial": "Mar-06-2016",
+            "last": "Apr-01-2016",
+            "increment": 172800000
         }, {
             "name": "start",
-            "type": "number"
+            "type": "number",
+            "range": [100, 500]
         }, {
-            "name": "close"
+            "name": "close",
+            "range": [500, 1000]
         }
     ]
 }
