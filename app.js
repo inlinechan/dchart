@@ -45,7 +45,7 @@ http.listen(3000, function() {
     console.log('listening on *:3000');
 });
 
-var schema = null;
+var schema = 'number.js';
 
 if (process.argv.length > 2) {
     schema = process.argv[2];

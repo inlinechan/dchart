@@ -1,8 +1,7 @@
 var fs = require('fs'),
     d3 = require('d3');
 
-
-var schema = 'schema.json';
+var schema = 'number.json';
 
 if (process.argv.length > 2)
     schema = process.argv[2];
