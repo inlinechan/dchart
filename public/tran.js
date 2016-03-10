@@ -193,6 +193,18 @@ function lineChart(scales) {
                     // console.log(values.map(getX));
                     // console.log(values.map(getY));
 
+                    var dots = [];
+                    data.forEach(function(line) {
+                        line.values.forEach(function(item) {
+                            dots.push({name: line.name, id: item.id, value: +item.value});
+                        });
+                    });
+
+                    svg.selectAll(".circle").data([]).exit().remove();
+
+                    var circles = svg.selectAll(".circle")
+                            .data(dots);
+
                     path
                         .data(data)
                         .attr("d", function(d) { return line(d.values); })
@@ -204,7 +216,23 @@ function lineChart(scales) {
 
                     path
                         .transition()
-                        .attr("transform", "translate(" + xTranslateOffset + ")");
+                        .attr("transform", "translate(" + xTranslateOffset + ")")
+                        .each("end", function() {
+                            circles
+                                .enter()
+                                .append("circle")
+                                .attr({
+                                    class: "circle",
+                                    fill: function(d, i) { return color(d.name); },
+                                    opacity: 1.0,
+                                    cx: function(d, i) { return x(getX(d)); },
+                                    cy: function(d, i) { return y(getY(d)); },
+                                    r: 5,
+                                    opacity: 0.0
+                                })
+                                .transition()
+                                .attr("opacity", 1.0);
+                        });
 
                     data.forEach(function(e) {
                         e.values.splice(0, 1);
