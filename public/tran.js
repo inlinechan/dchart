@@ -105,6 +105,33 @@ function lineChart(scales) {
                 .style("stroke", function(d) { return color(d.name); })
                 .attr("d", function(d) { return line(d.values); });
 
+            var dots = [];
+            color.domain().forEach(function(name) {
+                data.forEach(function(d) {
+                    dots.push({name: name, id: d.id, value: +d[name]});
+                });
+            });
+            // console.log(dots);
+
+            var circles = svg.selectAll(".circle")
+                    .data(dots)
+                    .enter()
+                    .append("circle")
+                    .attr({
+                        class: "circle",
+                        fill: function(d, i) { return color(d.name); },
+                        cx: function(d, i) { return x(getX(d)); },
+                        cy: function(d, i) { return y(getY(d)); },
+                        r: 5});
+
+                // .append("circle")
+                // .attr("class", "circle")
+                // .attr("fill", function(d) { return color(d.name); })
+                // .style("stroke", function(d, i) { return "black"; })
+                // .attr("cx", function(d) { return x(getX(d.values[0])); })
+                // .attr("cy", function(d) { return y(getY(d.values[0])); })
+                // .attr("r", 5);
+
             selection.data([series]);
         });
     };
@@ -148,7 +175,7 @@ function lineChart(scales) {
             });
             // console.log('data: ' + JSON.stringify(data));
 
-            var svg = d3.select(this);
+            var svg = d3.select(this).select("svg").select("g");
             var path = svg.selectAll(".line");
             var translateX = 0;
 
@@ -199,12 +226,44 @@ function lineChart(scales) {
 
                 selection.data([data]);
 
+                var dots = [];
+                data.forEach(function(line) {
+                    line.values.forEach(function(item) {
+                        dots.push({name: line.name, id: item.id, value: +item.value});
+                    });
+                });
+                // dots.splice(0, dots.length - 2);
+                console.log(dots);
+
+                svg.selectAll(".circle").data([]).exit().remove();
+
+                var circles = svg.selectAll(".circle")
+                        .data(dots);
+
                 // data.forEach(function(e) {
                 //     console.log('domain: ' + e.values.map(getX));
                 //     console.log('values: ' + e.values.map(getY));
                 // });
 
-                svg.select(".x.axis").transition().call(xAxis);
+                svg.select(".x.axis")
+                    .transition()
+                    .call(xAxis)
+                    .each("end", function() {
+                        circles
+                            .enter()
+                            .append("circle")
+                            .attr({
+                                class: "circle",
+                                fill: function(d, i) { return color(d.name); },
+                                cx: function(d, i) { return x(getX(d)); },
+                                cy: function(d, i) { return y(getY(d)); },
+                                r: 5,
+                                opacity: 0.0
+                            })
+                            .transition()
+                            .attr("opacity", 1.0);
+                    });
+
                 svg.select(".y.axis").call(yAxis);
             }
         });
