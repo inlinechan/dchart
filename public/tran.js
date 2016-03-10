@@ -68,7 +68,7 @@ function lineChart(scales) {
                     .append("g")
                     .attr("class", "item");
 
-            gEnter.append("defs").append("clipPath")
+            svg.append("defs").append("clipPath")
                 .attr("id", "clip")
                 .append("rect")
                 .attr("width", width)
