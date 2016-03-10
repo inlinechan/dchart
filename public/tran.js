@@ -20,16 +20,11 @@ function lineChart(scales) {
             .x(function(d) { return x(getX(d)); })
             .y(function(d) { return y(getY(d)); });
 
-    var initialMinDomainX = 1;
+    var initialMinDomainX = null;
     var xRange = 10;
 
-    var getX = function(d) {
-        return d.id;
-    };
-
-    var getY = function(d) {
-        return d.value;
-    };
+    var getX = null,
+        getY = function(d) { return d.value; };
 
     var lastElement = function(ar, dist) {
         if (dist == undefined)
@@ -77,7 +72,7 @@ function lineChart(scales) {
             x.range([0, width])
                 .domain(d3.extent(data, getX));
 
-            initialMinDomainX = firstElement(x.domain());
+            initialMinDomainX = getX(firstElement(x.domain()));
             // y.domain(d3.extent(data, function(d) { return d.value; }));
             // TODO: calculate y domain
             y.range([height, 0])
@@ -210,9 +205,7 @@ function lineChart(scales) {
                         .attr("d", function(d) { return line(d.values); })
                         .attr("transform", null);
 
-                    translateX = currentX - lastX;
-
-                    var xTranslateOffset = -1 * x(initialMinDomainX + translateX);
+                    var xTranslateOffset = -1 * x(initialMinDomainX + currentX - lastX);
 
                     path
                         .transition()
@@ -339,7 +332,7 @@ function parseGetX(schema) {
     schema.columns.forEach(function(e) {
         if ('x' in e) {
             var name = e['name'];
-            getX = function(d) { return d[name]; };
+            getX = function(d) { return +d[name]; };
         }
     });
     return getX;
