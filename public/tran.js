@@ -57,11 +57,12 @@ function lineChart(scales) {
                     .append("g")
                     .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-            var gEnter = svg.selectAll(".item")
-                    .data(series)
-                    .enter()
-                    .append("g")
-                    .attr("class", "item");
+            var container = svg.append("g").attr("class", "container")
+                    .attr("clip-path", "url(#clip)");
+
+            var transContainer = container.append("g").attr("class", "transContainer");
+            var lineContainer = transContainer.append("g").attr("class", "lineContainer");
+            var dotContainer = transContainer.append("g").attr("class", "dotContainer");
 
             svg.append("defs").append("clipPath")
                 .attr("id", "clip")
@@ -78,12 +79,14 @@ function lineChart(scales) {
             y.range([height, 0])
                 .domain([0, 1200]);
 
-            svg.append("g")
+            var axisContainer = svg.append("g");
+
+            axisContainer.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
-            svg.append("g")
+            axisContainer.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
                 .append("text")
@@ -93,8 +96,9 @@ function lineChart(scales) {
                 .style("text-anchor", "end")
                 .text("Price ($)");
 
-            gEnter.append("g")
-                .attr("clip-path", "url(#clip)")
+            lineContainer.selectAll(".line")
+                .data(series)
+                .enter()
                 .append("path")
                 .attr("class", "line")
                 .style("stroke", function(d) { return color(d.name); })
@@ -108,24 +112,17 @@ function lineChart(scales) {
             });
             // console.log(dots);
 
-            var circles = svg.selectAll(".circle")
+            var circles = dotContainer.selectAll(".circle")
                     .data(dots)
                     .enter()
                     .append("circle")
+                    .transition()
                     .attr({
                         class: "circle",
                         fill: function(d, i) { return color(d.name); },
                         cx: function(d, i) { return x(getX(d)); },
                         cy: function(d, i) { return y(getY(d)); },
                         r: 5});
-
-                // .append("circle")
-                // .attr("class", "circle")
-                // .attr("fill", function(d) { return color(d.name); })
-                // .style("stroke", function(d, i) { return "black"; })
-                // .attr("cx", function(d) { return x(getX(d.values[0])); })
-                // .attr("cy", function(d) { return y(getY(d.values[0])); })
-                // .attr("r", 5);
 
             selection.data([series]);
         });
@@ -171,8 +168,19 @@ function lineChart(scales) {
             // console.log('data: ' + JSON.stringify(data));
 
             var svg = d3.select(this).select("svg").select("g");
-            var path = svg.selectAll(".line");
+
+            var transContainer = svg.select(".transContainer");
+            var lineContainer = transContainer.select(".lineContainer");
+            var dotContainer = transContainer.select(".dotContainer");
+            var path = lineContainer.selectAll(".line");
             var translateX = 0;
+
+            var dots = [];
+            data.forEach(function(line) {
+                line.values.forEach(function(item) {
+                    dots.push({name: line.name, id: item.id, value: +item.value});
+                });
+            });
 
             if (data[0].values.length > xRange) {
                 var transition = d3.select({}).transition()
@@ -188,44 +196,33 @@ function lineChart(scales) {
                     // console.log(values.map(getX));
                     // console.log(values.map(getY));
 
-                    var dots = [];
-                    data.forEach(function(line) {
-                        line.values.forEach(function(item) {
-                            dots.push({name: line.name, id: item.id, value: +item.value});
-                        });
-                    });
-
-                    svg.selectAll(".circle").data([]).exit().remove();
-
-                    var circles = svg.selectAll(".circle")
-                            .data(dots);
-
                     path
                         .data(data)
-                        .attr("d", function(d) { return line(d.values); })
+                        .attr("d", function(d) { return line(d.values); });
+
+                    dotContainer.selectAll(".circle").data([]).exit().remove();
+                    var circles = dotContainer.selectAll(".circle")
+                            .data(dots);
+
+                    transContainer
                         .attr("transform", null);
 
                     var xTranslateOffset = -1 * x(initialMinDomainX + currentX - lastX);
 
-                    path
+                    circles
+                        .enter()
+                        .append("circle")
+                        .attr({
+                            class: "circle",
+                            fill: function(d, i) { return color(d.name); },
+                            opacity: 1.0,
+                            cx: function(d, i) { return x(getX(d)); },
+                            cy: function(d, i) { return y(getY(d)); },
+                            r: 5});
+
+                    transContainer
                         .transition()
-                        .attr("transform", "translate(" + xTranslateOffset + ")")
-                        .each("end", function() {
-                            circles
-                                .enter()
-                                .append("circle")
-                                .attr({
-                                    class: "circle",
-                                    fill: function(d, i) { return color(d.name); },
-                                    opacity: 1.0,
-                                    cx: function(d, i) { return x(getX(d)); },
-                                    cy: function(d, i) { return y(getY(d)); },
-                                    r: 5,
-                                    opacity: 0.0
-                                })
-                                .transition()
-                                .attr("opacity", 1.0);
-                        });
+                        .attr("transform", "translate(" + xTranslateOffset + ")");
 
                     data.forEach(function(e) {
                         e.values.splice(0, 1);
@@ -247,24 +244,17 @@ function lineChart(scales) {
 
                 selection.data([data]);
 
-                var dots = [];
+                dots = [];
                 data.forEach(function(line) {
                     line.values.forEach(function(item) {
                         dots.push({name: line.name, id: item.id, value: +item.value});
                     });
                 });
-                // dots.splice(0, dots.length - 2);
                 console.log(dots);
 
-                svg.selectAll(".circle").data([]).exit().remove();
-
-                var circles = svg.selectAll(".circle")
+                dotContainer.selectAll(".circle").data([]).exit().remove();
+                var circles = dotContainer.selectAll(".circle")
                         .data(dots);
-
-                // data.forEach(function(e) {
-                //     console.log('domain: ' + e.values.map(getX));
-                //     console.log('values: ' + e.values.map(getY));
-                // });
 
                 svg.select(".x.axis")
                     .transition()
